@@ -1,36 +1,34 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from vpython import canvas, box, cylinder, vector, color, rate
+import math
 
-def draw_cube(ax, vertices, color='blue'):
-    faces = [[vertices[j] for j in [0, 1, 2, 3]],
-             [vertices[j] for j in [4, 5, 6, 7]], 
-             [vertices[j] for j in [0, 1, 5, 4]], 
-             [vertices[j] for j in [2, 3, 7, 6]], 
-             [vertices[j] for j in [0, 3, 7, 4]], 
-             [vertices[j] for j in [1, 2, 6, 5]]]
-    poly3d = Poly3DCollection(faces, alpha=.25, linewidths=1, edgecolors=color)
-    poly3d.set_facecolor(color)
-    ax.add_collection3d(poly3d)
+scene = canvas(width=800, height=600, background=color.white)
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.set_xlim([-2, 4])
-ax.set_ylim([-2, 4])
-ax.set_zlim([-2, 4])
+def draw_cuboid(pos, length, width, height, color):
+    cuboid = box(pos=vector(*pos), length=length, width=width, height=height, color=color)
+    return cuboid
 
-cube = np.array([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0],
-                 [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]])
+def draw_cylinder(pos, radius, height, color):
+    cyl = cylinder(pos=vector(*pos), radius=radius, height=height, color=color)
+    return cyl
 
-draw_cube(ax, cube)
+def translate(obj, dx, dy, dz):
+    obj.pos += vector(dx, dy, dz)
 
-# Translation
-translated_cube = cube + np.array([1, 1, 1])
-draw_cube(ax, translated_cube, color='red')
+def rotate(obj, angle, axis):
+    obj.rotate(angle=angle, axis=vector(*axis))
 
-# Scaling
-scaled_cube = cube * 2
-draw_cube(ax, scaled_cube, color='green')
+def scale(obj, sx, sy, sz):
+    obj.size = vector(obj.size.x * sx, obj.size.y * sy, obj.size.z * sz)
 
-plt.title('3D Geometric Operations')
-plt.show()
+cuboid = draw_cuboid((-2, 0, 0), 2, 2, 2, color.blue)
+translate(cuboid, 4, 0, 0)
+rotate(cuboid, angle=math.radians(45), axis=(0, 1, 0))
+scale(cuboid, 1.5, 1.5, 1.5)
+
+cyl = draw_cylinder((2, 2, 0), 1, 10, color.red)
+translate(cyl, 0, -2, 0)
+rotate(cyl, angle=math.radians(30), axis=(1, 0, 0))
+scale(cyl, 1.5, 1.5, 1.5)
+
+while True:
+    rate(30)

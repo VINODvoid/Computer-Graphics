@@ -1,31 +1,26 @@
-import matplotlib.pyplot as plt
+import cv2
 import numpy as np
 
-def transform_2d(points, matrix):
-    return np.dot(points, matrix)
+canvas_width = 500
+canvas_height = 500
 
-square = np.array([[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1], [0, 0, 1]])
+canvas = np.ones((canvas_height, canvas_width, 3), dtype=np.uint8) * 255
 
-fig, ax = plt.subplots()
-ax.set_xlim(-5, 5)
-ax.set_ylim(-5, 5)
+obj_points = np.array([[100, 100], [200, 100], [200, 200], [100, 200]], dtype=np.int32)
 
-ax.plot(square[:, 0], square[:, 1], label='Original')
+translation_matrix = np.float32([[1, 0, 100], [0, 1, 50]])
+rotation_matrix = cv2.getRotationMatrix2D((150, 150), 45, 1)
+scaling_matrix = np.float32([[1.5, 0, 0], [0, 1.5, 0]])
 
-# Translation matrix
-trans_matrix = np.array([[1, 0, 2],
-                         [0, 1, 3],
-                         [0, 0, 1]])
-translated_square = transform_2d(square, trans_matrix)
-ax.plot(translated_square[:, 0], translated_square[:, 1], label='Translated')
+translated_obj = np.array([np.dot(translation_matrix, [x, y, 1])[:2] for x, y in obj_points], dtype=np.int32)
+rotated_obj = np.array([np.dot(rotation_matrix, [x, y, 1])[:2] for x, y in translated_obj], dtype=np.int32)
+scaled_obj = np.array([np.dot(scaling_matrix, [x, y, 1])[:2] for x, y in rotated_obj], dtype=np.int32)
 
-# Scaling matrix
-scale_matrix = np.array([[2, 0, 0],
-                         [0, 2, 0],
-                         [0, 0, 1]])
-scaled_square = transform_2d(square, scale_matrix)
-ax.plot(scaled_square[:, 0], scaled_square[:, 1], label='Scaled')
+cv2.polylines(canvas, [obj_points], True, (0, 0, 0), 2)
+cv2.polylines(canvas, [translated_obj], True, (0, 255, 0), 2)
+cv2.polylines(canvas, [rotated_obj], True, (255, 0, 0), 2)
+cv2.polylines(canvas, [scaled_obj], True, (0, 0, 255), 2)
 
-plt.title('2D Transformations')
-plt.legend()
-plt.show()
+cv2.imshow("2D Transformations", canvas)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

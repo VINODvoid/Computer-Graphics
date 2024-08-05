@@ -1,24 +1,61 @@
-import matplotlib.pyplot as plt
+import turtle
+import math
 
-def draw_square(ax, vertices, color='blue'):
-    square = plt.Polygon(vertices, closed=True, fill=None, edgecolor=color)
-    ax.add_patch(square)
+screen = turtle.Screen()
+screen.bgcolor("white")
 
-fig, ax = plt.subplots()
-ax.set_xlim(-10, 10)
-ax.set_ylim(-10, 10)
+t = turtle.Turtle()
+t.speed(1)
+t.pensize(2)
 
-square = [(0, 0), (2, 0), (2, 2), (0, 2)]
+def draw_rectangle(x, y, width, height, color):
+    t.penup()
+    t.goto(x, y)
+    t.pendown()
+    t.color(color)
+    for _ in range(2):
+        t.forward(width)
+        t.left(90)
+        t.forward(height)
+        t.left(90)
 
-draw_square(ax, square)
+def draw_circle(x, y, radius, color):
+    t.penup()
+    t.goto(x, y - radius)
+    t.pendown()
+    t.color(color)
+    t.circle(radius)
 
-# Translation
-translated_square = [(x + 2, y + 3) for x, y in square]
-draw_square(ax, translated_square, color='red')
+def translate(x, y, dx, dy):
+    t.penup()
+    t.goto(x + dx, y + dy)
+    t.pendown()
 
-# Scaling
-scaled_square = [(x * 2, y * 2) for x, y in square]
-draw_square(ax, scaled_square, color='green')
+def rotate(x, y, angle):
+    t.penup()
+    t.goto(x, y)
+    t.setheading(angle)
+    t.pendown()
 
-plt.title('2D Geometric Operations')
-plt.show()
+def scale(x, y, sx, sy):
+    t.penup()
+    t.goto(x * sx, y * sy)
+    t.pendown()
+
+draw_rectangle(-200, 0, 100, 50, "blue")
+translate(-200, 0, 200, 0)
+draw_rectangle(0, 0, 100, 50, "blue")
+rotate(0, 0, 45)
+draw_rectangle(0, 0, 100, 50, "blue")
+scale(0, 0, 2, 2)
+draw_rectangle(0, 0, 100, 50, "blue")
+
+draw_circle(100, 100, 50, "red")
+translate(100, 100, 200, 0)
+draw_circle(300, 100, 50, "red")
+rotate(300, 100, 45)
+draw_circle(300, 100, 50, "red")
+scale(300, 100, 2, 2)
+draw_circle(600, 200, 50, "red")
+
+turtle.done()
